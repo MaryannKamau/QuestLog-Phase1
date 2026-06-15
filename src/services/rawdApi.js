@@ -37,3 +37,11 @@ export async function searchGames(searchTerm) {
 
   return response.json();
 }
+// NEW FUNCTION: Fetch screenshots for the gallery
+export async function getGameScreenshots(id) {
+  const response = await fetch(`${BASE_URL}/games/${id}/screenshots?key=${API_KEY}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch screenshots");
+  }
+  return response.json();
+}

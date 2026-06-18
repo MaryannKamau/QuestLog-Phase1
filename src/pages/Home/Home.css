@@ -1,0 +1,124 @@
+.home-page {
+  background-color: #142453; 
+  min-height: 100vh;
+  padding-bottom: 6rem;
+  color: #ffffff;
+}
+
+
+.hero-section {
+
+  background: linear-gradient(180deg, #1d0363 0%, #041959 100%);
+  padding: 7rem 2rem;
+  text-align: center;
+  border-bottom: 1px solid #1a1135;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(90deg, #b5179e, #7209b7, #3f37c9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+  font-size: 1.15rem;
+  color: #94a3b8; 
+  max-width: 620px;
+  margin: 0 auto 2.5rem auto;
+  line-height: 1.6;
+}
+
+.hero-cta-btn {
+  background: linear-gradient(135deg, #560bad, #7209b7);
+  color: #ffffff;
+  border: none;
+  padding: 0.8rem 2.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px rgba(114, 9, 183, 0.3);
+}
+
+.hero-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(114, 9, 183, 0.55);
+}
+
+
+.trending-section {
+  max-width: 1200px;
+  margin: 4rem auto 0 auto;
+  padding: 0 1.5rem;
+}
+
+.trending-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  font-weight: 700;
+  border-left: 5px solid #483d8b; 
+  padding-left: 0.8rem;
+}
+
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2.2rem;
+}
+
+
+.loading-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #7209b7;
+  font-weight: 500;
+  margin: 5rem 0;
+}
+
+.error-text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #f72585;
+  margin: 5rem 0;
+}
+
+
+.footer-section {
+  margin-top: 5rem;
+  padding: 2.5rem 1.5rem;
+  background-color: #203052; 
+  border-top: 1px solid #2f2159; 
+  text-align: center;
+}
+
+.footer-content p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #64748b; 
+}
+
+.brand-highlight {
+  color: #ffffff;
+  font-weight: 600;
+  background: linear-gradient(90deg, #b5179e, #7209b7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.api-attribution a {
+  color: #4895ef; 
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.api-attribution a:hover {
+  color: #7209b7; 
+  text-decoration: underline;
+}

@@ -1,128 +1,44 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import "./SearchBar.css";
 
-import GameCard from "../../components/GameCard/GameCard";
-import SearchBar from "../../components/SearchBar/SearchBar";
-import Filters from "../../components/Filters/Filters";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+function SearchBar({ onSearch, isSearching = false }) {
+  const [query, setQuery] = useState("");
 
-import {
-  getGames,
-  searchGames,
-  getFilteredGames,
-} from "../../services/rawgApi";
+  function handleSubmit(event) {
+    event.preventDefault();
 
-function BrowseGames() {
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+    if (!query.trim()) return;
 
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const [genre, setGenre] = useState("");
-  const [platform, setPlatform] = useState("");
-  const [sortBy, setSortBy] = useState("");
-
-  useEffect(() => {
-    loadGames();
-  }, []);
-
-  useEffect(() => {
-    if (genre || platform || sortBy) {
-      applyFilters();
-    }
-  }, [genre, platform, sortBy]);
-
-  const loadGames = async () => {
-    try {
-      setLoading(true);
-
-      const data = await getGames();
-
-      setGames(data.results || []);
-      setError("");
-    } catch (err) {
-      setError("Failed to load games.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = async (query) => {
-    setSearchTerm(query);
-
-    if (!query.trim()) {
-      loadGames();
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const data = await searchGames(query);
-
-      setGames(data.results || []);
-    } catch (err) {
-      setError("Failed to search games.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const applyFilters = async () => {
-    try {
-      setLoading(true);
-
-      const data = await getFilteredGames({
-        genre,
-        platform,
-        sortBy,
-      });
-
-      setGames(data.results || []);
-    } catch (err) {
-      setError("Failed to filter games.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <LoadingSpinner />;
+    onSearch(query);
   }
 
   return (
-    <main className="browse-games">
-      <h1>Browse Games</h1>
+    <form className="search-bar" onSubmit={handleSubmit}>
+      <label className="search-bar__label" htmlFor="game-search">
+        Search games
+      </label>
 
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearchChange={handleSearch}
-      />
+      <div className="search-bar__controls">
+        <input
+          className="search-bar__input"
+          id="game-search"
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Try Minecraft, FIFA..."
+          autoComplete="off"
+        />
 
-      <Filters
-        genre={genre}
-        platform={platform}
-        sortBy={sortBy}
-        onGenreChange={setGenre}
-        onPlatformChange={setPlatform}
-        onSortChange={setSortBy}
-      />
-
-      {error && <p>{error}</p>}
-
-      <div className="games-grid">
-        {games.map((game) => (
-          <GameCard
-            key={game.id}
-            game={game}
-          />
-        ))}
+        <button
+          className="search-bar__button"
+          type="submit"
+          disabled={isSearching || !query.trim()}
+        >
+          {isSearching ? "Searching..." : "Search"}
+        </button>
       </div>
-    </main>
+    </form>
   );
 }
 
-export default BrowseGames;
+export default SearchBar;

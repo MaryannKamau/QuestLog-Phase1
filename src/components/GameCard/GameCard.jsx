@@ -1,9 +1,10 @@
 import React from 'react';
 import './GameCard.css';
+import { Link } from 'react-router-dom';
 
 const GameCard = ({game}) => {
 
-  const {name, background_image, rating, released} = game;
+  const {id,name, background_image, rating, released} = game;
 
   return(
 
@@ -20,8 +21,11 @@ const GameCard = ({game}) => {
             <p className="game-release-date">Released: {released || 'Unknown'}</p>
             { rating && <span className="game-rating">{rating}</span> }
             
-          </div>
-           <button className="details-button">View Details</button>
+         </div>
+          <Link to={`/games/${id}`} className="view-details-btn">
+             View Details
+          </Link>
+           
 
         </div>
     </div>

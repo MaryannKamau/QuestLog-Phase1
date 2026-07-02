@@ -60,7 +60,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .game-title {
@@ -73,12 +73,38 @@
 }
 
 .game-release-date {
-  margin: 0 0 1.5rem 0;
+  margin: 0 ;
   font-size: 0.85rem;
   color: #64748b;
 }
 
-.view-details-btn {
+.card-action-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  align-items: center;
+  width: 100%;
+}
+
+.collection-select {
+  background-color: #0b111e;
+  color: #ffffff;
+  border: 1px solid #2e2156;
+  padding: 0.65rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  max-width: 130px;
+}
+
+.collection-select:hover {
+  border-color: #500880;
+}
+
+.details-button {
   background: linear-gradient(135deg, #231e7d 0%, #591e9d 100%);
   color: #ffffff;
   border: none;
@@ -86,23 +112,21 @@
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.85rem;
-  width: 100%;
   text-align: center;
   cursor: pointer;
-  margin-top: auto;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
 
   display: flex;
   align-items: center;
   justify-content: center;
-
   text-decoration: none;
+  flex-grow: 1;
 }
 
-.view-details-btn:hover {
+.details-button:hover {
   background: linear-gradient(135deg, #4895ef 0%, #7209b7 100%);
 }
 
-.view-details-btn:active {
+.details-button:active {
   transform: scale(0.97);
 }

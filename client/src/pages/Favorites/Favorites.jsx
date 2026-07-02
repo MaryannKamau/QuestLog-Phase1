@@ -1,4 +1,4 @@
-import { useFavorites } from "../../context/FavoritesContext";
+import { useFavorites } from "../../context/FavouritesContext";
 import GameCard from "../../components/GameCard/GameCard";
 
 function Favorites() {

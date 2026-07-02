@@ -32,7 +32,7 @@ const  Home = () => {
             <div className="hero-content">
               <h1>Track Your Next Adventure</h1>
                <p>Discover trending titles, track your backlog, and manage your ultimate library.</p>
-               <button className="hero-cta-btn">Explore Games</button>
+               <button className="hero-cta-btn" onClick={() => document.querySelector('.trending-games-section')?.scrollIntoView({ behavior: 'smooth' })}>Explore Games</button>
             </div>
           </header>
 

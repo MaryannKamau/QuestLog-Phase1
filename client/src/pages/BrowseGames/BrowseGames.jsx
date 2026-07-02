@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./BrowseGames.css";
 
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -10,7 +10,7 @@ import {
   getGames,
   searchGames,
   getFilteredGames,
-} from "../../services/rawgApi";
+} from "../../services/gameApi";
 
 function BrowseGames() {
   const [games, setGames] = useState([]);

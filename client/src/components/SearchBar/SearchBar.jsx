@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./SearchBar.css";
 
 function SearchBar({ onSearch, isSearching = false }) {

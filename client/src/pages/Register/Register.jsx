@@ -1,0 +1,88 @@
+import React, { useState } from "react";
+import { registerUser } from "../../services/authApi.js";
+import "../Login/Login.css";
+
+function Register() {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setFormData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }));
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setStatus("loading");
+    setError("");
+
+    try {
+      await registerUser(formData);
+      setStatus("success");
+    } catch (registerError) {
+      setError(registerError.message);
+      setStatus("error");
+    }
+  }
+
+  return (
+    <main className="auth-page">
+      <section className="auth-panel">
+        <p className="auth-panel__eyebrow">Create account</p>
+        <h1>Join QuestLog</h1>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label htmlFor="register-username">Username</label>
+          <input
+            id="register-username"
+            name="username"
+            type="text"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="register-email">Email</label>
+          <input
+            id="register-email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="register-password">Password</label>
+          <input
+            id="register-password"
+            name="password"
+            type="password"
+            minLength="6"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          {error && <p className="auth-form__error">{error}</p>}
+          {status === "success" && (
+            <p className="auth-form__success">Your account was created.</p>
+          )}
+
+          <button type="submit" disabled={status === "loading"}>
+            {status === "loading" ? "Creating account" : "Create account"}
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+
+export default Register;

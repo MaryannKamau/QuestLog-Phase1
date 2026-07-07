@@ -1,21 +1,47 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 const TOKEN_KEY = "questlog_token";
 const USER_KEY = "questlog_user";
 
-async function authRequest(path, payload) {
-  const response = await fetch(`${API_BASE_URL}/auth${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
+export async function apiRequest(path, options = {}) {
+  const token = getAuthToken();
+  const headers = {
+    Accept: "application/json",
+    ...options.headers,
+  };
+
+  if (options.body) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+    body: options.body ? JSON.stringify(options.body) : undefined,
   });
 
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.error || "Authentication request failed.");
+    throw new Error(data.error || "Request failed.");
   }
+
+  return data;
+}
+
+async function authRequest(path, payload) {
+  const data = await apiRequest(`/auth${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: payload,
+  });
 
   if (data.access_token) {
     localStorage.setItem(TOKEN_KEY, data.access_token);
@@ -34,6 +60,13 @@ export function registerUser({ username, email, password }) {
 
 export function loginUser({ email, password }) {
   return authRequest("/login", { email, password });
+}
+
+export async function fetchCurrentUser() {
+  const data = await apiRequest("/auth/me");
+  const user = data.user || data;
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  return user;
 }
 
 export function logoutUser() {

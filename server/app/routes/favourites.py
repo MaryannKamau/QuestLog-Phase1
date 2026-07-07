@@ -1,39 +1,68 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.extensions import db
 from app.models.favourite import Favourite
-from app.schemas.favourite_schema import (
-    favourite_schema,
-    favourites_schema,
-)
 
-favourites_bp = Blueprint("favourites", __name__)
+favourites_bp = Blueprint("favourites", __name__, url_prefix="/api/favourites")
 
 
 @favourites_bp.route("/", methods=["GET"])
+@jwt_required()
 def get_favourites():
-    favourites = Favourite.query.all()
-    return favourites_schema.dump(favourites), 200
+    favourites = (
+        Favourite.query.filter_by(user_id=int(get_jwt_identity()))
+        .order_by(Favourite.created_at.desc())
+        .all()
+    )
+
+    return jsonify([favourite.to_dict() for favourite in favourites]), 200
 
 
 @favourites_bp.route("/", methods=["POST"])
+@jwt_required()
 def add_favourite():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
+    game = data.get("game") or {}
 
-    favourite = Favourite(
-        game_id=data["game_id"],
-        user_id=data["user_id"],
-    )
+    try:
+        game_id = int(data.get("game_id") or game.get("id"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "A valid game_id is required."}), 400
 
-    db.session.add(favourite)
+    user_id = int(get_jwt_identity())
+    favourite = Favourite.query.filter_by(
+        user_id=user_id,
+        game_id=game_id,
+    ).first()
+
+    status_code = 200
+
+    if not favourite:
+        favourite = Favourite(user_id=user_id, game_id=game_id)
+        db.session.add(favourite)
+        status_code = 201
+
+    favourite.game_name = data.get("game_name") or game.get("name")
+    favourite.background_image = data.get("background_image") or game.get("background_image")
+    favourite.rating = data.get("rating") or game.get("rating")
+    favourite.released = data.get("released") or game.get("released")
+
     db.session.commit()
 
-    return favourite_schema.dump(favourite), 201
+    return jsonify(favourite.to_dict()), status_code
 
 
-@favourites_bp.route("/<int:id>", methods=["DELETE"])
-def remove_favourite(id):
-    favourite = Favourite.query.get_or_404(id)
+@favourites_bp.route("/<int:game_id>", methods=["DELETE"])
+@jwt_required()
+def remove_favourite(game_id):
+    favourite = Favourite.query.filter_by(
+        user_id=int(get_jwt_identity()),
+        game_id=game_id,
+    ).first()
+
+    if not favourite:
+        return jsonify({"error": "Favourite not found."}), 404
 
     db.session.delete(favourite)
     db.session.commit()

@@ -1,12 +1,13 @@
-import React, {useState, useEffect } from 'react';
-import GameCard from '../../components/GameCard/GameCard';
-import {getGames} from '../../services/rawgApi';
-import '../../styles/globals.css';
+import { useEffect, useState } from "react";
 
-const  Home = () => {
-    const [games,setGames] = useState([]);
-    const [loading,setLoading] = useState(true);
-    const [error,setError] = useState(null);
+import GameCard from "../../components/GameCard/GameCard";
+import { getGames } from "../../services/gameApi";
+import "../../styles/globals.css";
+
+const Home = () => {
+    const [games, setGames] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
 
@@ -14,7 +15,7 @@ const  Home = () => {
             try {
                 setLoading(true);
                 const data = await getGames();
-                setGames(data.results);
+                setGames(data.results || []);
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -50,9 +51,9 @@ const  Home = () => {
            )}
           </section>
 
-          < footer className="footer-section">
+          <footer className="footer-section">
             <div className="footer-content">
-                <p>© {new Date().getFullYear()} <span className="brand-highlight">QuestLog</span>. All rights reserved.</p>
+                <p>{new Date().getFullYear()} <span className="brand-highlight">QuestLog</span>. All rights reserved.</p>
                 <p className="api-attribution">Powered by the <a href="https://rawg.io" target="_blank" rel="noreferrer">RAWG API</a></p>
             </div>
           </footer>

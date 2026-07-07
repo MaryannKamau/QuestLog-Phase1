@@ -5,14 +5,17 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./styles/globals.css";
 
-import { FavouritesProvider } from "./context/FavouritesContext";
+import { AuthProvider } from "./context/AuthContext";
+import { FavoritesProvider } from "./context/FavouritesContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <FavouritesProvider>
-        <App />
-      </FavouritesProvider>
+      <AuthProvider>
+        <FavoritesProvider>
+          <App />
+        </FavoritesProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

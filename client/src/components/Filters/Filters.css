@@ -6,9 +6,11 @@
 }
 
 .filters select {
+  background: #ffffff;
+  color: #000000;
   padding: 0.7rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #cccccc;
   font-size: 1rem;
   cursor: pointer;
 }

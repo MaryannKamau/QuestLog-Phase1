@@ -25,7 +25,7 @@ body {
     135deg,
     var(--color-bg-primary),
     var(--color-bg-secondary),
-    var(--color-purple-dark)
+    #3d1b74
   );
 
   color: var(--color-text-primary);

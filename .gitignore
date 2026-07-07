@@ -1,6 +1,8 @@
 
 # Logs
 .env
+.env.*
+!.env.example
 logs
 *.log
 npm-debug.log*
@@ -13,6 +15,15 @@ node_modules
 dist
 dist-ssr
 *.local
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+server/venv/
+*.db
+*.sqlite
+*.sqlite3
+instance/
 
 # Editor directories and files
 .vscode/*

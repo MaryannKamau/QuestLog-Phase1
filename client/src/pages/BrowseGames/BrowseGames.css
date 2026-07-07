@@ -2,6 +2,9 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  background: rgba(7, 20, 38, 0.75);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
 }
 
 .browse-games-header {
@@ -50,7 +53,7 @@
   background: var(--color-bg-card);
 
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 }
 
 .search-filter-container {

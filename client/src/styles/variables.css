@@ -1,26 +1,26 @@
 :root {
-  --color-bg-primary: #07111f;
-  --color-bg-secondary: #0d1f2f;
-  --color-bg-card: #13283a;
-  --color-bg-elevated: #18354a;
+  --color-bg-primary: #071426;
+  --color-bg-secondary: #142344;
+  --color-bg-card: #1b2f59;
+  --color-bg-elevated: #101a33;
 
-  --color-accent: #2dd4bf;
-  --color-accent-strong: #14b8a6;
-  --color-warm: #f59e0b;
+  --color-accent: #8f5fff;
+  --color-accent-strong: #7c3aed;
+  --color-warm: #c7b6ff;
   --color-danger: #f97373;
 
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #b7c6d8;
-  --color-text-accent: #dff7f3;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b8c1ec;
+  --color-text-accent: #d8cfff;
 
-  --color-border: rgba(148, 163, 184, 0.24);
+  --color-border: rgba(155, 120, 255, 0.25);
 
-  --shadow-card: 0 12px 30px rgba(0, 0, 0, 0.26);
-  --shadow-hover: 0 16px 34px rgba(20, 184, 166, 0.18);
+  --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.25);
+  --shadow-hover: 0 12px 24px rgba(114, 9, 183, 0.25);
 
   --radius-sm: 8px;
-  --radius-md: 8px;
-  --radius-lg: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 
   --space-xs: 0.5rem;
   --space-sm: 1rem;

@@ -24,7 +24,8 @@ body {
   background: linear-gradient(
     135deg,
     var(--color-bg-primary),
-    var(--color-bg-secondary)
+    var(--color-bg-secondary),
+    #3d1b74
   );
 
   color: var(--color-text-primary);

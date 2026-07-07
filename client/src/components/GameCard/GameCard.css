@@ -1,10 +1,10 @@
 .game-card {
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  background-color: #2951a5;
+  border: 1px solid #2e2156;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -13,16 +13,16 @@
 }
 
 .game-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(45, 212, 191, 0.42);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-6px);
+  border-color: #7209b7;
+  box-shadow: 0 12px 24px rgba(114, 9, 183, 0.25);
 }
 
 .card-image-container {
   overflow: hidden;
   width: 100%;
   height: 160px;
-  background-color: #0d1f2f;
+  background-color: #0d1630;
   position: relative;
 }
 
@@ -35,7 +35,7 @@
 
 .card-image--empty {
   align-items: center;
-  color: var(--color-accent);
+  color: #c7b6ff;
   display: flex;
   font-size: 3rem;
   font-weight: 800;
@@ -48,21 +48,25 @@
   flex-direction: column;
   flex-grow: 1;
   justify-content: space-between;
-  background-color: var(--color-bg-card);
+  background-color: #142344;
 }
 
 .game-rating {
   position: absolute;
   top: 12px;
   right: 12px;
-  background-color: rgba(7, 17, 31, 0.9);
+  background-color: rgba(11, 17, 30, 0.9);
   backdrop-filter: blur(6px);
   padding: 0.35rem 0.7rem;
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 700;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  border: 1px solid #5c0d99;
+  color: #ffffff;
+}
+
+.game-rating::before {
+  content: "⭐ ";
 }
 
 .card-content {
@@ -76,7 +80,7 @@
   margin: 0 0 0.5rem 0;
   font-size: 1.15rem;
   line-height: 1.4;
-  color: var(--color-text-primary);
+  color: #ffffff;
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -84,7 +88,7 @@
 .game-release-date {
   margin: 0 0 1.5rem 0;
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
+  color: #64748b;
 }
 
 .details-button,
@@ -96,9 +100,9 @@
 }
 
 .details-button {
-  background: #0f2536;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  background: linear-gradient(135deg, #231e7d 0%, #591e9d 100%);
+  border: none;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,21 +111,19 @@
 }
 
 .details-button:hover {
-  background: #16364c;
-  border-color: rgba(45, 212, 191, 0.42);
+  background: linear-gradient(135deg, #4895ef 0%, #7209b7 100%);
 }
 
 .favorite-button {
-  background: var(--color-accent-strong);
-  color: #06211d;
-  border: none;
+  background: rgba(12, 23, 48, 0.85);
+  color: #d8cfff;
+  border: 1px solid #5c0d99;
   margin-bottom: 0.65rem;
 }
 
 .favorite-button--saved {
-  background: rgba(245, 158, 11, 0.18);
-  border: 1px solid rgba(245, 158, 11, 0.45);
-  color: #fbd38d;
+  background: #7c3aed;
+  color: #ffffff;
 }
 
 .favorite-button:disabled {

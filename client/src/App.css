@@ -4,18 +4,28 @@
 }
 
 .app-header {
-  margin: 0 auto 2rem;
+  text-align: center;
+  padding: 2rem 1rem;
   max-width: 1200px;
-  padding: 1rem 0 1.5rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: rgba(8, 18, 40, 0.85);
+  border: 1px solid rgba(155, 120, 255, 0.35);
+  box-shadow: 0 0 25px rgba(94, 44, 165, 0.35);
 }
 
 .app-header h1 {
   margin: 0;
   font-size: 3rem;
-  color: var(--color-text-accent);
-  letter-spacing: 0;
+  color: #c7b6ff;
+  letter-spacing: 1px;
+}
+
+.app-header p {
+  margin: 0.8rem auto 0;
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  max-width: 680px;
 }
 
 @media (max-width: 640px) {
@@ -32,21 +42,17 @@
   }
 }
 
-.app-header p {
-  margin-top: 0.8rem;
-  color: var(--color-text-secondary);
-  font-size: 1.1rem;
-  max-width: 680px;
-}
-
 main {
   max-width: 1200px;
   margin: 0 auto;
+  background: rgba(7, 20, 38, 0.75);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
   padding: 2rem;
 }
 
 a {
-  color: var(--color-accent);
+  color: #c7b6ff;
   text-decoration: none;
 }
 
@@ -58,7 +64,7 @@ input {
 
 button {
   background: var(--color-accent-strong);
-  color: #06211d;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 0.7rem 1rem;
@@ -67,7 +73,7 @@ button {
 }
 
 button:hover {
-  background: var(--color-accent);
+  background: #9f7aea;
 }
 
 .games-grid {

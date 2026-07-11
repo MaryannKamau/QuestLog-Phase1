@@ -12,8 +12,5 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-<<<<<<< Updated upstream
-=======
 
     RAWG_API_KEY = os.getenv("RAWG_API_KEY")
->>>>>>> Stashed changes

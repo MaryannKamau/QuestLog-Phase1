@@ -1,5 +1,13 @@
-from app.models.user import User
-from app.models.favourite import Favourite
-from app.models.review import Review
-from app.models.collection import Collection
-from app.models.collection_game import CollectionGame
+from .user import User
+from .collection import Collection
+from .collection_game import CollectionGame
+from .favourite import Favourite
+from .review import Review
+
+__all__ = [
+    "User",
+    "Collection",
+    "CollectionGame",
+    "Favourite",
+    "Review",
+]

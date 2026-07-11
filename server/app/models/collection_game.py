@@ -1,0 +1,22 @@
+from app.extensions import db
+
+
+class CollectionGame(db.Model):
+    __tablename__ = "collection_games"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    collection_id = db.Column(
+        db.Integer,
+        db.ForeignKey("collections.id"),
+        nullable=False,
+    )
+
+    game_id = db.Column(db.Integer, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "collection_id": self.collection_id,
+            "game_id": self.game_id,
+        }

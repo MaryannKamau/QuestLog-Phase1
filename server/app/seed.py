@@ -1,11 +1,8 @@
 from app import create_app
 from app.extensions import db
 
-from app.models.user import User
-from app.models.collection import Collection
-from app.models.collection_game import CollectionGame
-from app.models.favourite import Favourite
-from app.models.review import Review
+# Cleaned up model package import mapping
+from app.models import User, Collection, CollectionGame, Favourite, Review
 
 app = create_app()
 
@@ -23,37 +20,19 @@ with app.app_context():
 
     print("Creating users...")
 
-    charles = User(
-        username="charles",
-        email="charles@example.com"
-    )
+    charles = User(username="charles", email="charles@example.com")
     charles.set_password("password123")
 
-    maryann = User(
-        username="maryann",
-        email="maryann@example.com"
-    )
+    maryann = User(username="maryann", email="maryann@example.com")
     maryann.set_password("password123")
 
-    fatuma = User(
-        username="fatuma",
-        email="fatuma@example.com"
-    )
+    fatuma = User(username="fatuma", email="fatuma@example.com")
     fatuma.set_password("password123")
 
-    stephen = User(
-        username="stephen",
-        email="stephen@example.com"
-    )
+    stephen = User(username="stephen", email="stephen@example.com")
     stephen.set_password("password123")
 
-    db.session.add_all([
-        charles,
-        maryann,
-        fatuma,
-        stephen
-    ])
-
+    db.session.add_all([charles, maryann, fatuma, stephen])
     db.session.commit()
 
     print("Creating collections...")
@@ -70,70 +49,53 @@ with app.app_context():
         user_id=maryann.id
     )
 
-    db.session.add_all([
-        collection1,
-        collection2
-    ])
-
+    db.session.add_all([collection1, collection2])
     db.session.commit()
 
     print("Adding games to collections...")
 
     db.session.add_all([
-        CollectionGame(
-            game_id=3498,
-            collection_id=collection1.id
-        ),
-        CollectionGame(
-            game_id=4200,
-            collection_id=collection1.id
-        ),
-        CollectionGame(
-            game_id=3328,
-            collection_id=collection2.id
-        )
+        CollectionGame(game_id=3498, collection_id=collection1.id),
+        CollectionGame(game_id=4200, collection_id=collection1.id),
+        CollectionGame(game_id=3328, collection_id=collection2.id)
     ])
 
-    print("Creating favourites...")
+    print("Creating favourites with Phase 3 metadata support...")
 
     db.session.add_all([
         Favourite(
             game_id=3498,
-            user_id=charles.id
+            user_id=charles.id,
+            game_name="Grand Theft Auto V",
+            background_image="https://placeholder.com",
+            rating=4.5,
+            released="2013-09-17"
         ),
         Favourite(
             game_id=3328,
-            user_id=maryann.id
+            user_id=maryann.id,
+            game_name="The Witcher 3: Wild Hunt",
+            background_image="https://placeholder.com",
+            rating=4.7,
+            released="2015-05-19"
         ),
         Favourite(
             game_id=4200,
-            user_id=fatuma.id
+            user_id=fatuma.id,
+            game_name="Portal 2",
+            background_image="https://placeholder.com",
+            rating=4.6,
+            released="2011-04-18"
         )
     ])
 
     print("Creating reviews...")
 
     db.session.add_all([
-        Review(
-            game_id=3498,
-            rating=5,
-            comment="Amazing game!",
-            user_id=charles.id
-        ),
-        Review(
-            game_id=3328,
-            rating=4,
-            comment="Really enjoyable.",
-            user_id=maryann.id
-        ),
-        Review(
-            game_id=4200,
-            rating=5,
-            comment="One of my favourites.",
-            user_id=stephen.id
-        )
+        Review(game_id=3498, rating=5, comment="Amazing game!", user_id=charles.id),
+        Review(game_id=3328, rating=4, comment="Really enjoyable.", user_id=maryann.id),
+        Review(game_id=4200, rating=5, comment="One of my favourites.", user_id=stephen.id)
     ])
 
     db.session.commit()
-
     print("Database seeded successfully!")

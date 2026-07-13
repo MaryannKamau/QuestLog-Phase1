@@ -94,6 +94,21 @@
   margin: 0;
 }
 
+/* RESTORED AND ADAPTED: Phase 2 Tag Selection Layout Containers */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .game-gallery {
   display: grid;
   gap: 1rem;

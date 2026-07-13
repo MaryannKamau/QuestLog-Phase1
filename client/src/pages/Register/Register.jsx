@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { registerUser } from "../../services/authApi.js";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../../context/useAuth";
 import "../Login/Login.css";
 
 function Register() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -25,8 +29,9 @@ function Register() {
     setError("");
 
     try {
-      await registerUser(formData);
+      await register(formData);
       setStatus("success");
+      navigate("/favorites", { replace: true });
     } catch (registerError) {
       setError(registerError.message);
       setStatus("error");
@@ -72,13 +77,14 @@ function Register() {
           />
 
           {error && <p className="auth-form__error">{error}</p>}
-          {status === "success" && (
-            <p className="auth-form__success">Your account was created.</p>
-          )}
 
           <button type="submit" disabled={status === "loading"}>
             {status === "loading" ? "Creating account" : "Create account"}
           </button>
+
+          <p className="auth-form__footer">
+            Already have an account? <Link to="/login">Log in</Link>
+          </p>
         </form>
       </section>
     </main>

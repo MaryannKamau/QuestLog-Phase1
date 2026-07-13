@@ -1,12 +1,13 @@
 :root {
-  /* Colors */
   --color-bg-primary: #071426;
   --color-bg-secondary: #142344;
   --color-bg-card: #1b2f59;
+  --color-bg-elevated: #101a33;
 
-  --color-purple-primary: #5b2fa8;
-  --color-purple-light: #8f5fff;
-  --color-purple-dark: #3d1b74;
+  --color-accent: #8f5fff;
+  --color-accent-strong: #7c3aed;
+  --color-warm: #c7b6ff;
+  --color-danger: #f97373;
 
   --color-text-primary: #ffffff;
   --color-text-secondary: #b8c1ec;
@@ -14,25 +15,20 @@
 
   --color-border: rgba(155, 120, 255, 0.25);
 
-  /* Shadows */
   --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.25);
   --shadow-hover: 0 12px 24px rgba(114, 9, 183, 0.25);
 
-  /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
 
-  /* Spacing */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
   --space-md: 1.5rem;
   --space-lg: 2rem;
 
-  /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
 
-  /* Max Width */
   --container-width: 1200px;
 }

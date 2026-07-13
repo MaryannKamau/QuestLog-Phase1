@@ -19,7 +19,7 @@
 .search-bar__button {
     border: 1px solid #3a2a63;
     border-radius: 8px;
-    font: inherent;
+    font: inherit;
     min-height: 3rem;
 }
 
@@ -31,7 +31,7 @@
 }
 
 .search-bar__input::placeholder {
-   color: #9fa8c7; 
+   color: #9fa8c7;
 }
 
 .search-bar__input:focus {

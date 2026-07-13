@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./BrowseGames.css";
 
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -14,7 +14,7 @@ import {
 
 function BrowseGames() {
   const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const [genre, setGenre] = useState("");
@@ -22,28 +22,29 @@ function BrowseGames() {
   const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
-    loadGames();
+    let ignore = false;
+
+    getGames()
+      .then((data) => {
+        if (!ignore) {
+          setGames(data.results || []);
+        }
+      })
+      .catch(() => {
+        if (!ignore) {
+          setError("Failed to load games.");
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, []);
-
-  useEffect(() => {
-    if (genre !== "" || platform !== "" || sortBy !== "") {
-      handleFilters();
-    }
-  }, [genre, platform, sortBy]);
-
-  async function loadGames() {
-    try {
-      setLoading(true);
-      setError("");
-
-      const data = await getGames();
-      setGames(data.results || []);
-    } catch (err) {
-      setError("Failed to load games.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function handleSearch(query) {
     try {
@@ -52,30 +53,41 @@ function BrowseGames() {
 
       const data = await searchGames(query);
       setGames(data.results || []);
-    } catch (err) {
+    } catch {
       setError("Failed to search games.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleFilters() {
+  async function applyFilters(nextFilters) {
     try {
       setLoading(true);
       setError("");
 
-      const data = await getFilteredGames({
-        genre,
-        platform,
-        sortBy,
-      });
+      const data = await getFilteredGames(nextFilters);
 
       setGames(data.results || []);
-    } catch (err) {
+    } catch {
       setError("Failed to filter games.");
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleGenreChange(value) {
+    setGenre(value);
+    applyFilters({ genre: value, platform, sortBy });
+  }
+
+  function handlePlatformChange(value) {
+    setPlatform(value);
+    applyFilters({ genre, platform: value, sortBy });
+  }
+
+  function handleSortChange(value) {
+    setSortBy(value);
+    applyFilters({ genre, platform, sortBy: value });
   }
 
   return (
@@ -92,9 +104,9 @@ function BrowseGames() {
           genre={genre}
           platform={platform}
           sortBy={sortBy}
-          onGenreChange={setGenre}
-          onPlatformChange={setPlatform}
-          onSortChange={setSortBy}
+          onGenreChange={handleGenreChange}
+          onPlatformChange={handlePlatformChange}
+          onSortChange={handleSortChange}
         />
       </div>
 

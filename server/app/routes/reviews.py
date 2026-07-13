@@ -1,65 +1,142 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.extensions import db
 from app.models.review import Review
-from app.schemas.review_schema import (
-    review_schema,
-    reviews_schema,
-)
+from app.extensions import db
 
-reviews_bp = Blueprint("reviews", __name__)
+reviews_bp = Blueprint("reviews", __name__, url_prefix="/api")
 
 
-@reviews_bp.route("/", methods=["GET"])
-def get_reviews():
-    reviews = Review.query.all()
-    return reviews_schema.dump(reviews), 200
+def current_user_id():
+    return int(get_jwt_identity())
 
 
-@reviews_bp.route("/<int:id>", methods=["GET"])
-def get_review(id):
-    review = Review.query.get_or_404(id)
-    return review_schema.dump(review), 200
+def find_owned_review(review_id):
+    review = db.session.get(Review, review_id)
+
+    if not review:
+        return None, (jsonify({"error": "Review not found."}), 404)
+
+    if review.user_id != current_user_id():
+        return None, (jsonify({"error": "You can only modify your own reviews."}), 403)
+
+    return review, None
 
 
-@reviews_bp.route("/", methods=["POST"])
-def create_review():
-    data = request.get_json()
+def clean_review_payload(data, partial=False):
+    errors = {}
+    payload = {}
 
-    review = Review(
-        game_id=data["game_id"],
-        rating=data["rating"],
-        comment=data.get("comment"),
-        user_id=data["user_id"],
+    if not partial or "rating" in data:
+        try:
+            rating = int(data.get("rating"))
+            if rating < 1 or rating > 5:
+                errors["rating"] = "Rating must be between 1 and 5."
+            else:
+                payload["rating"] = rating
+        except (TypeError, ValueError):
+            errors["rating"] = "Rating must be a number between 1 and 5."
+
+    if not partial or "comment" in data:
+        comment = data.get("comment", "").strip()
+        if not comment:
+            errors["comment"] = "Comment is required."
+        else:
+            payload["comment"] = comment
+
+    return payload, errors
+
+
+@reviews_bp.route("/games/<int:game_id>/reviews", methods=["GET"])
+def get_game_reviews(game_id):
+    reviews = (
+        Review.query.filter_by(game_id=game_id)
+        .order_by(Review.created_at.desc())
+        .all()
     )
 
-    db.session.add(review)
+    return jsonify([review.to_dict() for review in reviews]), 200
+
+
+@reviews_bp.route("/reviews", methods=["GET"])
+@jwt_required()
+def get_my_reviews():
+    reviews = (
+        Review.query.filter_by(user_id=current_user_id())
+        .order_by(Review.created_at.desc())
+        .all()
+    )
+
+    return jsonify([review.to_dict() for review in reviews]), 200
+
+
+@reviews_bp.route("/games/<int:game_id>/reviews", methods=["POST"])
+@jwt_required()
+def add_game_review(game_id):
+    data = request.get_json(silent=True) or {}
+    payload, errors = clean_review_payload(data)
+
+    if errors:
+        return jsonify({"error": "Review could not be saved.", "fields": errors}), 400
+
+    new_review = Review(
+        game_id=game_id,
+        user_id=current_user_id(),
+        rating=payload["rating"],
+        comment=payload["comment"],
+    )
+
+    db.session.add(new_review)
     db.session.commit()
 
-    return review_schema.dump(review), 201
+    return jsonify(new_review.to_dict()), 201
 
 
-@reviews_bp.route("/<int:id>", methods=["PATCH"])
-def update_review(id):
-    review = Review.query.get_or_404(id)
+@reviews_bp.route("/reviews/<int:review_id>", methods=["GET"])
+@jwt_required()
+def get_review(review_id):
+    review, error = find_owned_review(review_id)
 
-    data = request.get_json()
+    if error:
+        return error
 
-    review.rating = data.get("rating", review.rating)
-    review.comment = data.get("comment", review.comment)
+    return jsonify(review.to_dict()), 200
+
+
+@reviews_bp.route("/reviews/<int:review_id>", methods=["PATCH"])
+@jwt_required()
+def update_review(review_id):
+    review, error = find_owned_review(review_id)
+
+    if error:
+        return error
+
+    data = request.get_json(silent=True) or {}
+    payload, errors = clean_review_payload(data, partial=True)
+
+    if errors:
+        return jsonify({"error": "Review could not be updated.", "fields": errors}), 400
+
+    if "rating" in payload:
+        review.rating = payload["rating"]
+
+    if "comment" in payload:
+        review.comment = payload["comment"]
 
     db.session.commit()
 
-    return review_schema.dump(review), 200
+    return jsonify(review.to_dict()), 200
 
 
-@reviews_bp.route("/<int:id>", methods=["DELETE"])
-def delete_review(id):
-    review = Review.query.get_or_404(id)
+@reviews_bp.route("/reviews/<int:review_id>", methods=["DELETE"])
+@jwt_required()
+def delete_review(review_id):
+    review, error = find_owned_review(review_id)
+
+    if error:
+        return error
 
     db.session.delete(review)
     db.session.commit()
 
-    return jsonify({
-        "message": "Review deleted successfully."
-    }), 200
+    return jsonify({"message": "Review deleted successfully."}), 200

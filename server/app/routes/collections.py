@@ -1,77 +1,164 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from app.extensions import db
-from app.models import Collection, CollectionGame
-import requests
+from app.models.collection import Collection
+from app.models.collection_game import CollectionGame
 
-collections_bp = Blueprint("collections", __name__)
+collections_bp = Blueprint("collections", __name__, url_prefix="/api/collections")
 
-@collections_bp.route("/user/<int:user_id>", methods=["GET"])
-def get_user_collections(user_id):
-    collections = Collection.query.filter_by(user_id=user_id).all()
-    output = []
-    RAWG_API_KEY = "6744b8fd7cf2484b87174f26dfd242a3"
 
-    for c in collections:
-        games = CollectionGame.query.filter_by(collection_id=c.id).all()
-        games_list = []
-        for g in games:
-            game_entry = {
-                "id": g.id,
-                "game_id": g.game_id,
-                "name": f"Game ID: {g.game_id}",
-                "background_image": "https://placeholder.com"
-            }
-            try:
-                # FIXED SUBDOMAIN URL ENDPOINT
-                rawg_url = f"https://rawg.io/api/games/{g.game_id}"
-                res = requests.get(rawg_url, params={"key": RAWG_API_KEY}, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
-                if res.status_code == 200:
-                    game_details = res.json()
-                    game_entry["name"] = game_details.get("name", game_entry["name"])
-                    game_entry["background_image"] = game_details.get("background_image", game_entry["background_image"])
-            except Exception as e:
-                print(f"RAWG collection fault: {str(e)}")
-            games_list.append(game_entry)
-        output.append({"id": c.id, "name": c.name, "games": games_list})
-    return jsonify(output), 200
+def current_user_id():
+    return int(get_jwt_identity())
 
-@collections_bp.route("", methods=["POST"])
-def create_collection():
-    data = request.get_json()
-    if not data or 'name' not in data or 'user_id' not in data:
-        return jsonify({"error": "Missing name or user_id"}), 400
-    new_collection = Collection(name=data['name'], user_id=data['user_id'])
-    db.session.add(new_collection)
-    db.session.commit()
-    return jsonify({"id": new_collection.id, "name": new_collection.name}), 201
 
-@collections_bp.route("/<int:collection_id>/add-game", methods=["POST"])
-def add_game_to_collection(collection_id):
-    data = request.get_json()
-    if not data or 'game_id' not in data:
-        return jsonify({"error": "Missing game_id"}), 400
-    exists = CollectionGame.query.filter_by(collection_id=collection_id, game_id=data['game_id']).first()
-    if exists:
-        return jsonify({"message": "Game already in this collection"}), 400
-    new_game = CollectionGame(collection_id=collection_id, game_id=data['game_id'])
-    db.session.add(new_game)
-    db.session.commit()
-    return jsonify({"message": "Game added to collection successfully"}), 201
+def find_owned_collection(collection_id):
+    collection = db.session.get(Collection, collection_id)
 
-@collections_bp.route("/game/<int:game_entry_id>", methods=["DELETE"])
-def remove_game_from_collection(game_entry_id):
-    game_entry = CollectionGame.query.get(game_entry_id)
-    if not game_entry:
-        return jsonify({"error": "Game entry not found"}), 404
-    db.session.delete(game_entry)
-    db.session.commit()
-    return jsonify({"message": "Game removed from collection"}), 200
-
-@collections_bp.route("/<int:collection_id>", methods=["DELETE"])
-def delete_collection(collection_id):
-    collection = Collection.query.get(collection_id)
     if not collection:
-        return jsonify({"error": "Collection not found"}), 404
+        return None, (jsonify({"error": "Collection not found."}), 404)
+
+    if collection.user_id != current_user_id():
+        return None, (jsonify({"error": "You can only access your own collections."}), 403)
+
+    return collection, None
+
+
+@collections_bp.route("/", methods=["GET"])
+@jwt_required()
+def get_collections():
+    collections = (
+        Collection.query.filter_by(user_id=current_user_id())
+        .order_by(Collection.created_at.desc())
+        .all()
+    )
+
+    return jsonify([collection.to_dict() for collection in collections]), 200
+
+
+@collections_bp.route("/<int:id>", methods=["GET"])
+@jwt_required()
+def get_collection(id):
+    collection, error = find_owned_collection(id)
+
+    if error:
+        return error
+
+    return jsonify(collection.to_dict()), 200
+
+
+@collections_bp.route("/", methods=["POST"])
+@jwt_required()
+def create_collection():
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+
+    if not name:
+        return jsonify({"error": "Collection name is required."}), 400
+
+    collection = Collection(
+        name=name,
+        description=data.get("description"),
+        user_id=current_user_id(),
+    )
+
+    db.session.add(collection)
+    db.session.commit()
+
+    return jsonify(collection.to_dict()), 201
+
+
+@collections_bp.route("/<int:id>", methods=["PATCH"])
+@jwt_required()
+def update_collection(id):
+    collection, error = find_owned_collection(id)
+
+    if error:
+        return error
+
+    data = request.get_json(silent=True) or {}
+
+    if "name" in data:
+        name = data.get("name", "").strip()
+        if not name:
+            return jsonify({"error": "Collection name cannot be blank."}), 400
+        collection.name = name
+
+    if "description" in data:
+        collection.description = data.get("description")
+
+    db.session.commit()
+
+    return jsonify(collection.to_dict()), 200
+
+
+@collections_bp.route("/<int:id>", methods=["DELETE"])
+@jwt_required()
+def delete_collection(id):
+    collection, error = find_owned_collection(id)
+
+    if error:
+        return error
+
     db.session.delete(collection)
     db.session.commit()
-    return jsonify({"message": "Collection dropped successfully"}), 200
+
+    return jsonify({
+        "message": "Collection deleted successfully."
+    }), 200
+
+
+@collections_bp.route("/<int:id>/games", methods=["POST"])
+@jwt_required()
+def add_game_to_collection(id):
+    collection, error = find_owned_collection(id)
+
+    if error:
+        return error
+
+    data = request.get_json(silent=True) or {}
+
+    try:
+        game_id = int(data.get("game_id"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "A valid game_id is required."}), 400
+
+    existing_game = CollectionGame.query.filter_by(
+        collection_id=collection.id,
+        game_id=game_id,
+    ).first()
+
+    if existing_game:
+        return jsonify(existing_game.to_dict()), 200
+
+    collection_game = CollectionGame(
+        collection_id=collection.id,
+        game_id=game_id,
+    )
+
+    db.session.add(collection_game)
+    db.session.commit()
+
+    return jsonify(collection_game.to_dict()), 201
+
+
+@collections_bp.route("/<int:id>/games/<int:game_id>", methods=["DELETE"])
+@jwt_required()
+def remove_game_from_collection(id, game_id):
+    collection, error = find_owned_collection(id)
+
+    if error:
+        return error
+
+    collection_game = CollectionGame.query.filter_by(
+        collection_id=collection.id,
+        game_id=game_id,
+    ).first()
+
+    if not collection_game:
+        return jsonify({"error": "Game is not in this collection."}), 404
+
+    db.session.delete(collection_game)
+    db.session.commit()
+
+    return jsonify({"message": "Game removed from collection."}), 200

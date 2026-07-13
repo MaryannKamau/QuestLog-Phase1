@@ -1,20 +1,72 @@
-import { createContext, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 
-const FavoritesContext = createContext();
+import {
+  deleteFavourite,
+  getFavourites,
+  saveFavourite,
+} from "../services/favouritesApi";
+import { FavoritesContext } from "./favoritesContextValue";
+import { useAuth } from "./useAuth";
 
 export function FavoritesProvider({ children }) {
+  const { isAuthenticated, user } = useAuth();
   const [favorites, setFavorites] = useState([]);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
+  const [favoritesError, setFavoritesError] = useState("");
 
-  const addFavorite = (game) => {
-    const exists = favorites.find((favorite) => favorite.id === game.id);
-
-    if (!exists) {
-      setFavorites([...favorites, game]);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
     }
+
+    let ignore = false;
+
+    async function loadFavorites() {
+      setIsLoadingFavorites(true);
+      setFavoritesError("");
+
+      try {
+        const data = await getFavourites();
+
+        if (!ignore) {
+          setFavorites(data.map((item) => item.game));
+        }
+      } catch (error) {
+        if (!ignore) {
+          setFavoritesError(error.message);
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoadingFavorites(false);
+        }
+      }
+    }
+
+    loadFavorites();
+
+    return () => {
+      ignore = true;
+    };
+  }, [isAuthenticated, user?.id]);
+
+  const addFavorite = async (game) => {
+    if (!isAuthenticated) {
+      throw new Error("Log in to save favourites.");
+    }
+
+    if (favorites.find((favorite) => favorite.id === game.id)) {
+      return;
+    }
+
+    await saveFavourite(game);
+    setFavorites((currentFavorites) => [...currentFavorites, game]);
   };
 
-  const removeFavorite = (gameId) => {
-    setFavorites(favorites.filter((game) => game.id !== gameId));
+  const removeFavorite = async (gameId) => {
+    await deleteFavourite(gameId);
+    setFavorites((currentFavorites) =>
+      currentFavorites.filter((game) => game.id !== gameId)
+    );
   };
 
   const isFavorite = (gameId) => {
@@ -24,7 +76,9 @@ export function FavoritesProvider({ children }) {
   return (
     <FavoritesContext.Provider
       value={{
-        favorites,
+        favorites: isAuthenticated ? favorites : [],
+        favoritesError: isAuthenticated ? favoritesError : "",
+        isLoadingFavorites,
         addFavorite,
         removeFavorite,
         isFavorite,
@@ -33,8 +87,4 @@ export function FavoritesProvider({ children }) {
       {children}
     </FavoritesContext.Provider>
   );
-}
-
-export function useFavorites() {
-  return useContext(FavoritesContext);
 }

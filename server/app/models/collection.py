@@ -33,3 +33,13 @@ class Collection(db.Model):
         back_populates="collection",
         cascade="all, delete-orphan"
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "user_id": self.user_id,
+            "games": [game.to_dict() for game in self.games],
+        }

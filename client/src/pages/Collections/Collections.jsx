@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Collections.css";
+import { Link } from "react-router-dom";
 
 function Collections() {
   const [collections, setCollections] = useState([]);
@@ -9,7 +10,8 @@ function Collections() {
 
   // Hardcoded for development until your team connects global Auth session context
   const USER_ID = 2; 
-  const API_BASE = "https://questlog-backend-7tvc.onrender.com/api/collections";
+  
+  const API_BASE = `https://questlog-backend-2.onrender.com/api/collections`;
 
   useEffect(() => {
     fetchCollections();
@@ -111,8 +113,22 @@ function Collections() {
               {list.games.length === 0 && <p className="no-games-text">Drop titles into this workspace shelf.</p>}
               {list.games.map((game) => (
                 <div key={game.id} className="board-game-item">
+
+                  <Link 
+                    to={`/games/${game.game_id || game.id}`} 
+                    className="board-game-link"
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "15px", 
+                      textDecoration: "none", 
+                      color: "inherit",
+                      flex: "1"
+                    }}
+                  >
                   <img src={game.background_image} alt={game.name} />
                   <span>{game.name}</span>
+                  </Link>
                   <button onClick={() => handleRemoveGame(game.id)} className="remove-game-btn">✕</button>
                 </div>
               ))}

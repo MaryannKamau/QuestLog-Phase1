@@ -90,3 +90,16 @@
   cursor: pointer;
   font-size: 1.2rem;
 }
+
+.board-game-link:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
+}
+
+.board-game-link:hover span {
+  color: #8b5cf6; /* Turn text bright purple on row hover pointer */
+}
+
+.board-game-link img {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}

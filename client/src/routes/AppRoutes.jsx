@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import BrowseGames from "../pages/BrowseGames/BrowseGames";
 import GameDetails from "../pages/GameDetails/GameDetails";
@@ -6,71 +6,23 @@ import About from "../pages/About/About";
 import Favorites from "../pages/Favorites/Favorites";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
-import { useAuth } from "../context/useAuth";
-
-function ProtectedRoute({ children }) {
-  const { isAuthenticated, isCheckingAuth } = useAuth();
-  const location = useLocation();
-
-  if (isCheckingAuth) {
-    return <main className="route-state">Checking your session...</main>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return children;
-}
-
-function GuestRoute({ children }) {
-  const { isAuthenticated, isCheckingAuth } = useAuth();
-
-  if (isCheckingAuth) {
-    return <main className="route-state">Checking your session...</main>;
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to="/favorites" replace />;
-  }
-
-  return children;
-}
+import Collections from "../pages/Collections/Collections";
+import Home from "../pages/Home/Home";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<BrowseGames />} />
+
+      <Route path="/" element={<Home />} />
       <Route path="/games" element={<BrowseGames />} />
       <Route path="/games/:id" element={<GameDetails />} />
-      <Route
-        path="/favorites"
-        element={
-          <ProtectedRoute>
-            <Favorites />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/favorites" element={<Favorites />} />
       <Route path="/about" element={<About />} />
-      <Route
-        path="/login"
-        element={
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/collections" element={<Collections />} />
     </Routes>
   );
 }
 
-export default AppRoutes;
+export default AppRoutes

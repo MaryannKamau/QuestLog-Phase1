@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-7tvc.onrender.com/api";
+  import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
 
 async function requestGames(params = {}) {
   const queryParams = new URLSearchParams();
@@ -38,24 +38,4 @@ export function getFilteredGames({ genre, platform, sortBy }) {
     platform,
     sort_by: sortBy,
   });
-}
-
-export async function getGameById(id) {
-  const response = await fetch(`${API_BASE_URL}/games/${id}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch game details.");
-  }
-
-  return response.json();
-}
-
-export async function getGameScreenshots(id) {
-  const response = await fetch(`${API_BASE_URL}/games/${id}/screenshots`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch screenshots.");
-  }
-
-  return response.json();
 }

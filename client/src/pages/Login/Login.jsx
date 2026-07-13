@@ -1,13 +1,8 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-
-import { useAuth } from "../../context/useAuth";
+import React, { useState } from "react";
+import { loginUser } from "../../services/authApi.js";
 import "./Login.css";
 
 function Login() {
-  const { login } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,9 +24,8 @@ function Login() {
     setError("");
 
     try {
-      await login(formData);
+      await loginUser(formData);
       setStatus("success");
-      navigate(location.state?.from?.pathname || "/favorites", { replace: true });
     } catch (loginError) {
       setError(loginError.message);
       setStatus("error");
@@ -45,11 +39,11 @@ function Login() {
         <h1>Log in to QuestLog</h1>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="login-email">Email or username</label>
+          <label htmlFor="login-email">Email</label>
           <input
             id="login-email"
             name="email"
-            type="text"
+            type="email"
             value={formData.email}
             onChange={handleChange}
             required
@@ -66,14 +60,13 @@ function Login() {
           />
 
           {error && <p className="auth-form__error">{error}</p>}
+          {status === "success" && (
+            <p className="auth-form__success">You are logged in.</p>
+          )}
 
           <button type="submit" disabled={status === "loading"}>
             {status === "loading" ? "Logging in" : "Log in"}
           </button>
-
-          <p className="auth-form__footer">
-            New here? <Link to="/register">Create an account</Link>
-          </p>
         </form>
       </section>
     </main>

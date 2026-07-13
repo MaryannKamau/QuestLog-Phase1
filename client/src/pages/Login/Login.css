@@ -23,7 +23,7 @@
 }
 
 .auth-panel h1 {
-  color: var(--color-text-primary);
+  color: #ffffff;
   margin: 0;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .auth-form label {
-  color: var(--color-text-primary);
+  color: #f6f7fb;
   font-weight: 700;
 }
 
@@ -41,7 +41,7 @@
   background: #0d1730;
   border: 1px solid #3a2a63;
   border-radius: 8px;
-  color: var(--color-text-primary);
+  color: #ffffff;
   min-height: 2.75rem;
   padding: 0 0.9rem;
 }
@@ -68,11 +68,11 @@
 }
 
 .auth-form__error {
-  color: var(--color-danger);
+  color: #fca5a5;
   margin: 0;
 }
 
-.auth-form__footer {
-  color: var(--color-text-secondary);
+.auth-form__success {
+  color: #c4b5fd;
   margin: 0;
 }

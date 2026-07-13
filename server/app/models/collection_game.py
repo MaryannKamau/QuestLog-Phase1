@@ -18,10 +18,3 @@ class CollectionGame(db.Model):
         "Collection",
         back_populates="games"
     )
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "game_id": self.game_id,
-            "collection_id": self.collection_id,
-        }

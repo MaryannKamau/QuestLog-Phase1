@@ -1,3 +1,4 @@
+import requests
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.extensions import db
@@ -7,38 +8,14 @@ from app.models.favourite import Favourite
 favourites_bp = Blueprint("favourites", __name__, url_prefix="/api/favourites")
 
 
-
+# =====================================================================
+# RESTORED FRONTEND PATH: Fetch favorites array cleanly by User ID
+# =====================================================================
 @favourites_bp.route("/user/<int:user_id>", methods=["GET"])
 def get_user_favourites(user_id):
     favs = Favourite.query.filter_by(user_id=user_id).order_by(Favourite.created_at.desc()).all()
-    # Safely serialized into JSON blocks via the model dictionary helper
     return jsonify([f.to_dict() for f in favs]), 200
 
-@favourites_bp.route("/user/<int:user_id>", methods=["GET"])
-def get_user_favourites(user_id):
-    favs = Favourite.query.filter_by(user_id=user_id).all()
-    output = []
-    RAWG_API_KEY = "6744b8fd7cf2484b87174f26dfd242a3"
-    
-    for f in favs:
-        fav_entry = {
-            "id": f.id,
-            "game_id": f.game_id,
-            "name": f"Game ID: {f.game_id}",
-            "background_image": "https://placeholder.com"
-        }
-        try:
-            # FIXED SUBDOMAIN URL ENDPOINT
-            rawg_url = f"https://rawg.io/api/games/{f.game_id}"
-            res = requests.get(rawg_url, params={"key": RAWG_API_KEY}, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
-            if res.status_code == 200:
-                game_details = res.json()
-                fav_entry["name"] = game_details.get("name", fav_entry["name"])
-                fav_entry["background_image"] = game_details.get("background_image", fav_entry["background_image"])
-        except Exception as e:
-            print(f"RAWG favorites fault: {str(e)}")
-        output.append(fav_entry)
-    return jsonify(output), 200
 
 @favourites_bp.route("/", methods=["GET"])
 @jwt_required()
@@ -78,7 +55,9 @@ def add_favourite():
     return jsonify(favourite.to_dict()), status_code
 
 
-
+# =====================================================================
+# RESTORED FRONTEND PATH: Toggle favourite data blocks via POST requests
+# =====================================================================
 @favourites_bp.route("/toggle", methods=["POST"])
 def toggle_favourite():
     data = request.get_json(silent=True) or {}
@@ -114,4 +93,3 @@ def remove_favourite(game_id):
     db.session.delete(favourite)
     db.session.commit()
     return jsonify({"message": "Favourite removed successfully."}), 200
-

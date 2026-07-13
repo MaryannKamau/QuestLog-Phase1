@@ -1,21 +1,25 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
 from app.extensions import db
 from app.models.favourite import Favourite
 
+# Adopts their unified URL prefixing structure
 favourites_bp = Blueprint("favourites", __name__, url_prefix="/api/favourites")
+
+
+
+@favourites_bp.route("/user/<int:user_id>", methods=["GET"])
+def get_user_favourites(user_id):
+    favs = Favourite.query.filter_by(user_id=user_id).order_by(Favourite.created_at.desc()).all()
+    # Safely serialized into JSON blocks via the model dictionary helper
+    return jsonify([f.to_dict() for f in favs]), 200
 
 
 @favourites_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_favourites():
-    favourites = (
-        Favourite.query.filter_by(user_id=int(get_jwt_identity()))
-        .order_by(Favourite.created_at.desc())
-        .all()
-    )
-
+    user_id = int(get_jwt_identity())
+    favourites = Favourite.query.filter_by(user_id=user_id).order_by(Favourite.created_at.desc()).all()
     return jsonify([favourite.to_dict() for favourite in favourites]), 200
 
 
@@ -31,10 +35,7 @@ def add_favourite():
         return jsonify({"error": "A valid game_id is required."}), 400
 
     user_id = int(get_jwt_identity())
-    favourite = Favourite.query.filter_by(
-        user_id=user_id,
-        game_id=game_id,
-    ).first()
+    favourite = Favourite.query.filter_by(user_id=user_id, game_id=game_id).first()
 
     status_code = 200
 
@@ -49,8 +50,29 @@ def add_favourite():
     favourite.released = data.get("released") or game.get("released")
 
     db.session.commit()
-
     return jsonify(favourite.to_dict()), status_code
+
+
+
+@favourites_bp.route("/toggle", methods=["POST"])
+def toggle_favourite():
+    data = request.get_json(silent=True) or {}
+    user_id = data.get("user_id")
+    game_id = data.get("game_id")
+    
+    if not user_id or not game_id:
+        return jsonify({"error": "Missing user_id or game_id"}), 400
+        
+    existing_fav = Favourite.query.filter_by(user_id=int(user_id), game_id=int(game_id)).first()
+    if existing_fav:
+        db.session.delete(existing_fav)
+        db.session.commit()
+        return jsonify({"status": "unfavorited"}), 200
+    else:
+        new_fav = Favourite(user_id=int(user_id), game_id=int(game_id))
+        db.session.add(new_fav)
+        db.session.commit()
+        return jsonify({"status": "favorited"}), 201
 
 
 @favourites_bp.route("/<int:game_id>", methods=["DELETE"])
@@ -66,7 +88,5 @@ def remove_favourite(game_id):
 
     db.session.delete(favourite)
     db.session.commit()
+    return jsonify({"message": "Favourite removed successfully."}), 200
 
-    return jsonify({
-        "message": "Favourite removed successfully."
-    }), 200

@@ -17,6 +17,7 @@ function Navbar() {
         <Link to="/favorites">Favorites</Link>
         <Link to="/about">About</Link>
         <Link to="/collections">Collections</Link>
+        <Link to="/profile">My Profile</Link>
 
         {!isAuthenticated ? (
           <>

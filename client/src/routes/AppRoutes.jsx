@@ -10,6 +10,7 @@ import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import Collections from "../pages/Collections/Collections";
 import Home from "../pages/Home/Home";
+import Profile from "../pages/Profile/Profile";
 
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
 
@@ -21,6 +22,7 @@ function AppRoutes() {
       <Route path="/games" element={<BrowseGames />} />
       <Route path="/games/:id" element={<GameDetails />} />
       <Route path="/about" element={<About />} />
+      <Route path="/profile" element={<Profile />} />
 
       {/* Authentication */}
       <Route path="/login" element={<Login />} />

@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import BrowseGames from "../pages/BrowseGames/BrowseGames";
 import GameDetails from "../pages/GameDetails/GameDetails";
 import Favorites from "../pages/Favorites/Favorites";
+import Collections from "../pages/Collections/Collections"; // 1. Added your collections page import back!
 import About from "../pages/About/About";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
@@ -27,6 +28,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Favorites />
+          </ProtectedRoute>
+        }
+      />
+      {/* 2. Added your protected collections path back! */}
+      <Route
+        path="/collections"
+        element={
+          <ProtectedRoute>
+            <Collections />
           </ProtectedRoute>
         }
       />

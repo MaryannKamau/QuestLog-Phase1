@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+// Phase 3 Authentication, Favorites, and API Services Integration Hooks
 import { useAuth } from "../../context/useAuth";
 import { useFavorites } from "../../context/useFavorites";
 import { getGameById, getGameScreenshots } from "../../services/gameApi";
@@ -12,6 +13,7 @@ import {
 } from "../../services/reviewsApi";
 import "./GameDetails.css";
 
+// Helper script to sanitize messy RAWG HTML tags out of paragraph descriptions
 function stripHtml(value = "") {
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
@@ -28,6 +30,7 @@ function GameDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Form input and tracking states for Phase 3 Player Reviews Engine
   const [reviewText, setReviewText] = useState("");
   const [userRating, setUserRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,6 +81,7 @@ function GameDetails() {
     return game.description_raw || stripHtml(game.description);
   }, [game]);
 
+  // Phase 3 Secure Favorites Toggle Handler Hook Linkage
   async function handleFavoriteToggle() {
     if (!isAuthenticated) {
       navigate("/login", { state: { from: { pathname: `/games/${id}` } } });
@@ -97,6 +101,7 @@ function GameDetails() {
     }
   }
 
+  // Phase 3 CRUD: Create a review entry block
   async function handleReviewSubmit(event) {
     event.preventDefault();
     if (!reviewText.trim()) return;
@@ -126,6 +131,7 @@ function GameDetails() {
     setEditRating(review.rating);
   }
 
+  // Phase 3 CRUD: Update an existing review card entry
   async function handleReviewUpdate(event) {
     event.preventDefault();
 
@@ -148,8 +154,9 @@ function GameDetails() {
     }
   }
 
+  // Phase 3 CRUD: Delete a custom player review block from SQL database
   async function handleReviewDelete(reviewId) {
-    const shouldDelete = window.confirm("Delete this review?");
+    const shouldDelete = window.confirm("Are you sure you want to delete this review?");
 
     if (!shouldDelete) {
       return;
@@ -168,17 +175,16 @@ function GameDetails() {
   if (loading) return <main className="route-state">Loading game details...</main>;
   if (error) return <main className="route-state">Error: {error}</main>;
   if (!game) return <main className="route-state">Game not found.</main>;
-
   return (
     <main className="game-details-container">
       <button onClick={() => navigate(-1)} className="back-button" type="button">
-        Back
+        &larr; Back
       </button>
 
       <header className="game-header">
         <div>
           <h1>{game.name}</h1>
-          <p>
+          <p className="release-date">
             {game.released
               ? `Released ${new Date(game.released).toLocaleDateString()}`
               : "Release date unavailable"}
@@ -191,7 +197,7 @@ function GameDetails() {
           onClick={handleFavoriteToggle}
           aria-pressed={isFavorite(game.id)}
         >
-          {isFavorite(game.id) ? "Saved" : "Save"}
+          {isFavorite(game.id) ? "❤️ Saved" : "🤍 Save"}
         </button>
       </header>
 
@@ -212,11 +218,40 @@ function GameDetails() {
         <aside className="game-meta">
           <div className="meta-item">
             <h3>Rating</h3>
-            <p>{game.rating ? `${game.rating} / 5` : "Not rated"}</p>
+            <p>⭐ {game.rating ? `${game.rating} / 5` : "Not rated"}</p>
           </div>
+
+          {/* PROTECTED AND RESTORED: Phase 2 Genres Metadata Displays Container */}
+          {game.genres && game.genres.length > 0 && (
+            <div className="meta-item">
+              <h3>Genres</h3>
+              <div className="tag-list" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
+                {game.genres.map((genre) => (
+                  <span key={genre.id} className="tag" style={{ background: "rgba(139, 92, 246, 0.2)", border: "1px solid #8b5cf6", padding: "4px 10px", borderRadius: "6px", fontSize: "0.85rem" }}>
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PROTECTED AND RESTORED: Phase 2 Platforms Metadata Tags Container */}
+          {game.platforms && game.platforms.length > 0 && (
+            <div className="meta-item">
+              <h3>Platforms</h3>
+              <div className="tag-list" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
+                {game.platforms.map((p) => (
+                  <span key={p.platform.id} className="tag" style={{ background: "rgba(59, 130, 246, 0.2)", border: "1px solid #3b82f6", padding: "4px 10px", borderRadius: "6px", fontSize: "0.85rem" }}>
+                    {p.platform.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="meta-item">
             <h3>Reviews</h3>
-            <p>{reviews.length}</p>
+            <p>📝 {reviews.length} total</p>
           </div>
         </aside>
       </div>
@@ -229,8 +264,7 @@ function GameDetails() {
               <img
                 key={shot.id}
                 src={shot.image}
-                alt={`${game.name} screenshot`}
-                className="screenshot-image"
+                alt={`${game.name} gameplay snapshot`}
                 loading="lazy"
               />
             ))}
@@ -238,6 +272,7 @@ function GameDetails() {
         </section>
       )}
 
+      {/* Phase 3 Interactive Reviews Integration Dashboard */}
       <section className="reviews-section">
         <div className="reviews-heading">
           <h2>Player Reviews</h2>
@@ -249,54 +284,56 @@ function GameDetails() {
             <h3>Leave a Review</h3>
             {submitError && <p className="error-text">{submitError}</p>}
 
-            <label htmlFor="review-rating">Rating</label>
+            <label htmlFor="review-rating" style={{ display: "block", marginBottom: "4px" }}>Rating</label>
             <select
               id="review-rating"
               value={userRating}
               onChange={(event) => setUserRating(event.target.value)}
+              style={{ width: "100%", padding: "8px", marginBottom: "12px", borderRadius: "6px", background: "#0a122c", color: "#fff", border: "1px solid var(--color-border)" }}
             >
               {[5, 4, 3, 2, 1].map((rating) => (
                 <option key={rating} value={rating}>
-                  {rating}
+                  {rating} ⭐
                 </option>
               ))}
             </select>
 
-            <label htmlFor="review-comment">Review</label>
+            <label htmlFor="review-comment" style={{ display: "block", marginBottom: "4px" }}>Review</label>
             <textarea
               id="review-comment"
-              placeholder="What did you think?"
+              placeholder="What did you think of the gameplay, story, or mechanics?"
               value={reviewText}
               onChange={(event) => setReviewText(event.target.value)}
               required
               rows="4"
+              style={{ width: "100%", padding: "10px", marginBottom: "12px", borderRadius: "6px", background: "#0a122c", color: "#fff", border: "1px solid var(--color-border)", resize: "vertical" }}
             />
 
             <button type="submit" disabled={isSubmitting || !reviewText.trim()}>
-              {isSubmitting ? "Posting" : "Submit Review"}
+              {isSubmitting ? "Posting..." : "Submit Review"}
             </button>
           </form>
         ) : (
-          <div className="review-login">
-            <p>Log in to save favourites and leave a review.</p>
-            <Link to="/login" state={{ from: { pathname: `/games/${id}` } }}>
-              Log in
+          <div className="review-login" style={{ padding: "1.5rem", background: "rgba(255,255,255,0.05)", borderRadius: "10px", textAlign: "center" }}>
+            <p style={{ marginBottom: "12px" }}>Log in to save favourites and leave a review.</p>
+            <Link to="/login" state={{ from: { pathname: `/games/${id}` } }} style={{ color: "#a78bfa", fontWeight: "bold", textDecoration: "none" }}>
+              Log in &rarr;
             </Link>
           </div>
         )}
 
-        <div className="reviews-list">
+        <div className="reviews-list" style={{ marginTop: "1.5rem" }}>
           {reviews.length === 0 ? (
-            <p className="no-reviews">No reviews yet.</p>
+            <p className="no-reviews" style={{ color: "var(--color-text-secondary)" }}>No reviews yet.</p>
           ) : (
             reviews.map((review) => {
               const canEdit = user?.id === review.user_id;
 
               return (
-                <article key={review.id} className="review-card">
-                  <div className="review-header">
-                    <strong>{review.username || review.user}</strong>
-                    <span>{review.rating} / 5</span>
+                <article key={review.id} className="review-card" style={{ background: "rgba(15,23,42,0.6)", padding: "1rem", borderRadius: "10px", marginBottom: "1rem", border: "1px solid var(--color-border)" }}>
+                  <div className="review-header" style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "4px" }}>
+                    <strong>👤 {review.username || review.user}</strong>
+                    <span style={{ color: "#facc15" }}>{review.rating} / 5 ⭐</span>
                   </div>
 
                   {editingReviewId === review.id ? (
@@ -304,10 +341,11 @@ function GameDetails() {
                       <select
                         value={editRating}
                         onChange={(event) => setEditRating(event.target.value)}
+                        style={{ width: "100%", padding: "8px", marginBottom: "8px", borderRadius: "6px", background: "#0a122c", color: "#fff" }}
                       >
                         {[5, 4, 3, 2, 1].map((rating) => (
                           <option key={rating} value={rating}>
-                            {rating}
+                            {rating} ⭐
                           </option>
                         ))}
                       </select>
@@ -316,8 +354,9 @@ function GameDetails() {
                         onChange={(event) => setEditText(event.target.value)}
                         rows="3"
                         required
+                        style={{ width: "100%", padding: "8px", marginBottom: "8px", borderRadius: "6px", background: "#0a122c", color: "#fff" }}
                       />
-                      <div className="review-actions">
+                      <div className="review-actions" style={{ display: "flex", gap: "8px" }}>
                         <button type="submit">Save</button>
                         <button
                           type="button"
@@ -330,22 +369,23 @@ function GameDetails() {
                     </form>
                   ) : (
                     <>
-                      <p>{review.comment}</p>
-                      <small>
+                      <p style={{ margin: "8px 0" }}>{review.comment}</p>
+                      <small style={{ color: "var(--color-text-secondary)" }}>
                         {review.date
                           ? new Date(review.date).toLocaleDateString()
                           : "Date unavailable"}
                       </small>
 
                       {canEdit && (
-                        <div className="review-actions">
-                          <button type="button" onClick={() => startEditing(review)}>
+                        <div className="review-actions" style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                          <button type="button" onClick={() => startEditing(review)} style={{ padding: "4px 10px", fontSize: "0.85rem" }}>
                             Edit
                           </button>
                           <button
                             type="button"
                             className="button-danger"
                             onClick={() => handleReviewDelete(review.id)}
+                            style={{ padding: "4px 10px", fontSize: "0.85rem", background: "#ef4444", border: "none", color: "#fff", borderRadius: "4px", cursor: "pointer" }}
                           >
                             Delete
                           </button>

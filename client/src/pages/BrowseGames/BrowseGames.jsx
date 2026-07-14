@@ -24,6 +24,29 @@ function BrowseGames() {
   useEffect(() => {
     let ignore = false;
 
+  // Check if the user previously had an active search query stored
+  const savedQuery = sessionStorage.getItem("questlog_search_query");
+
+  if (savedQuery && savedQuery.trim()) {
+    // A: A search query was active! Automatically reload those search results
+    searchGames(savedQuery)
+      .then((data) => {
+        if (!ignore) {
+          setGames(data.results || []);
+        }
+      })
+      .catch(() => {
+        if (!ignore) {
+          setError("Failed to reload search results.");
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
+  } else {
+    // B: No search query exists. Fall back to loading default trending home games
     getGames()
       .then((data) => {
         if (!ignore) {
@@ -40,11 +63,12 @@ function BrowseGames() {
           setLoading(false);
         }
       });
+  }
 
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  return () => {
+    ignore = true;
+  };
+}, []);
 
   async function handleSearch(query) {
     try {

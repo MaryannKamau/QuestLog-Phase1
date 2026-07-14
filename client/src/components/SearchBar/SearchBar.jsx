@@ -1,13 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./SearchBar.css";
 
 function SearchBar({ onSearch, isSearching = false }) {
-  const [query, setQuery] = useState("");
+  // 1. Initialize state directly from browser sessionStorage if it exists
+  const [query, setQuery] = useState(() => {
+    return sessionStorage.getItem("questlog_search_query") || "";
+  });
+
+  // 2. Proactively trigger the search on mount if a stored query was found
+  useEffect(() => {
+    if (query.trim()) {
+      onSearch(query);
+    }
+  }, []);
 
   function handleSubmit(event) {
     event.preventDefault();
+    // 3. Save the exact search value right before executing the query
+    sessionStorage.setItem("questlog_search_query", query);
     onSearch(query);
   }
+
+  // 4. Clear Handler (Optional but helpful: clears storage when input is completely emptied)
+  const handleInputChange = (event) => {
+    const val = event.target.value;
+    setQuery(val);
+    if (!val.trim()) {
+      sessionStorage.removeItem("questlog_search_query");
+    }
+  };
 
   return (
     <form className="search-bar" onSubmit={handleSubmit}>
@@ -21,7 +42,7 @@ function SearchBar({ onSearch, isSearching = false }) {
           id="game-search"
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={handleInputChange}
           placeholder="Try Minecraft, FIFA..."
           autoComplete="off"
         />
@@ -39,3 +60,4 @@ function SearchBar({ onSearch, isSearching = false }) {
 }
 
 export default SearchBar;
+

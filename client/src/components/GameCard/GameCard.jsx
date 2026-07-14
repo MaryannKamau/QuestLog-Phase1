@@ -91,9 +91,10 @@ const GameCard = ({ game }) => {
     }
   }
 
-  return (
-    <div className="game-card">
-      <div className="card-image-container">
+    return (
+    <div className="game-card" style={{ position: "relative" }}>
+      {/* 1. IMAGE CONTAINER WITH FLOATING OVERLAYS */}
+      <div className="card-image-container" style={{ position: "relative", overflow: "hidden" }}>
         {background_image ? (
           <img
             src={background_image}
@@ -111,17 +112,34 @@ const GameCard = ({ game }) => {
           </span>
         )}
 
-        {/* FLOATING INTERACTIVE FAVORITE HEART ICON */}
+        {/* PROPERLY FLOATED INTERACTIVE HEART ICON */}
         <button 
           className={`fav-heart-btn ${saved ? "active" : ""}`} 
           onClick={handleFavoriteClick} 
           disabled={isSaving} 
           title="Toggle Favorite Status"
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            left: "10px",
+            zIndex: 10,
+            border: "none",
+            background: "rgba(0, 0, 0, 0.6)",
+            borderRadius: "50%",
+            width: "36px",
+            height: "36px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            fontSize: "1.2rem"
+          }}
         >
           {saved ? "❤️" : "🤍"}
         </button>
       </div>
 
+      {/* 2. CARD INFORMATION AND CONTROLS SECTION */}
       <div className="card-info-box">
         <div className="card-meta">
           <h3>{name}</h3>
@@ -131,45 +149,55 @@ const GameCard = ({ game }) => {
         </div>
 
         {/* FEEDBACK STATUS CONTAINER */}
-        {message && <p className="action-feedback-status">{message}</p>}
-        {saveError && <p className="game-card__error">{saveError}</p>}
+        {message && <p className="action-feedback-status" style={{ color: "#4caf50", fontWeight: "bold" }}>{message}</p>}
+        {saveError && <p className="game-card__error" style={{ color: "#f44336" }}>{saveError}</p>}
 
-        {/* DYNAMIC ADD TO COLLECTION DROPDOWN - Displays only when logged in */}
-        {isAuthenticated && userLists.length > 0 && (
-          <div className="add-to-collection-wrapper" style={{ marginBottom: "1rem" }}>
-            <select 
-              onChange={(e) => {
-                handleAddToList(e.target.value);
-                e.target.value = ""; 
-              }}
-              defaultValue=""
+        {/* 3. COLLECTION ACTIONS MANAGEMENT */}
+        {isAuthenticated ? (
+          userLists.length > 0 ? (
+            <div className="add-to-collection-wrapper" style={{ marginBottom: "0.5rem" }}>
+              <select 
+                onChange={(e) => {
+                  handleAddToList(e.target.value);
+                  e.target.value = ""; 
+                }}
+                defaultValue=""
+                style={{ width: "100%", padding: "0.5rem", borderRadius: "5px" }}
+              >
+                <option value="" disabled>📁 Add to Collection...</option>
+                {userLists.map((list) => (
+                  <option key={list.id} value={list.id}>
+                    {list.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="collection-button"
+              onClick={() => navigate("/collections")}
+              style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
             >
-              <option value="" disabled>➕ Add to collection...</option>
-              {userLists.map((list) => (
-                <option key={list.id} value={list.id}>
-                  {list.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              📁 Create a Collection
+            </button>
+          )
+        ) : (
+          <button
+            type="button"
+            className="collection-button"
+            onClick={() => navigate("/login")}
+            style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+          >
+            🔒 Login to Collect
+          </button>
         )}
 
-        {/* Refactored Phase 3 Toggle Save Button */}
-        <button
-          type="button"
-          className={`favorite-button ${saved ? "favorite-button--saved" : ""}`}
-          onClick={handleFavoriteClick}
-          disabled={isSaving}
-          aria-pressed={saved}
-          style={{ width: "100%", marginBottom: "0.5rem" }}
-        >
-          {isSaving ? "Saving..." : saved ? "❤️ Saved" : "🤍 Save to Favorites"}
-        </button>
-
+        {/* NAVIGATION LINK */}
         <Link
           to={`/games/${id}`}
           className="details-button"
-          style={{ display: "block", textAlign: "center", textDecoration: "none" }}
+          style={{ display: "block", textAlign: "center", textDecoration: "none", marginTop: "0.5rem" }}
         >
           View Details
         </Link>

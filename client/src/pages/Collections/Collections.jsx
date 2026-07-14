@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/useAuth"; // Added to hook into Phase 3 sessions
+import { useAuth } from "../../context/AuthContext"; // Added to hook into Phase 3 sessions
 import "./Collections.css";
 
 function Collections() {

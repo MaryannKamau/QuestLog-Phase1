@@ -76,3 +76,28 @@ h6 {
   color: var(--color-text-accent);
   margin-top: 0;
 }
+
+.games-grid {
+  display: grid;
+  /* Snaps cards into perfect multi-column layouts; wraps down automatically if space is tight */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* Adds responsive layouts for tablet and mobile screens */
+@media (max-width: 768px) {
+  .games-grid {
+    grid-template-columns: 1fr; /* Drops down to a clean single column stack on mobile phones */
+    gap: 1rem;
+  }
+}
+.games-grid,
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+}

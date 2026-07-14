@@ -11,7 +11,8 @@ function Profile() {
   const [collectionsCount, setCollectionsCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const COLL_API = `https://onrender.com`;
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
+    const COLL_API = `${API_BASE_URL}/collections`;
 
   // Redirect users to login view if they try to access profiles while logged out
   useEffect(() => {

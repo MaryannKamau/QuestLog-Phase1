@@ -19,9 +19,9 @@ const GameCard = ({ game }) => {
   const [userLists, setUserLists] = useState([]);
   const [message, setMessage] = useState("");
 
-  // Dynamically targets the logged-in user profile ID instead of hardcoding 2
-  const dynamicUserId = user?.id; 
-  const COLL_API = `https://questlog-backend-2.onrender.com/api/collections`;
+  // FIXED: Dynamically falls back to your active environment variable path rather than a hardcoded server link
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
+  const COLL_API = `${API_BASE_URL}/collections`;
 
   const {
     id,
@@ -35,16 +35,16 @@ const GameCard = ({ game }) => {
 
   // Phase 2 Lifecycle Hook - Safely tracks when users log in/out to switch collections
   useEffect(() => {
-    if (!isAuthenticated || !dynamicUserId) {
+    if (!isAuthenticated || !user?.id) {
       setUserLists([]); // Clear dropdown arrays if logged out
       return;
     }
 
-    fetch(`${COLL_API}/user/${dynamicUserId}`)
+    fetch(`${COLL_API}/user/${user.id}`)
       .then((res) => res.json())
       .then((data) => setUserLists(data))
       .catch(() => {});
-  }, [id, isAuthenticated, dynamicUserId]);
+  }, [id, isAuthenticated, user?.id]);
 
   // Phase 2 Asynchronous connection to push game snapshots into custom boards
   async function handleAddToList(collectionId) {
@@ -112,16 +112,14 @@ const GameCard = ({ game }) => {
         )}
 
         {/* FLOATING INTERACTIVE FAVORITE HEART ICON */}
-        
         <button 
-        className={`fav-heart-btn ${saved ? "active" : ""}`} // Changed isFavorite to saved string check 
-        onClick={handleFavoriteClick} 
-        disabled={isSaving} 
-        title="Toggle Favorite Status"
-      >
-  {saved ? "❤️" : "🤍"}
-</button>
-
+          className={`fav-heart-btn ${saved ? "active" : ""}`} 
+          onClick={handleFavoriteClick} 
+          disabled={isSaving} 
+          title="Toggle Favorite Status"
+        >
+          {saved ? "❤️" : "🤍"}
+        </button>
       </div>
 
       <div className="card-info-box">

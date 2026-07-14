@@ -13,7 +13,7 @@ function Collections() {
   // Dynamically uses the logged-in user ID instead of a hardcoded 2
   const dynamicUserId = user?.id; 
   
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-7tvc.onrender.com/api";
   const API_BASE = `${API_BASE_URL}/collections`;
   
   useEffect(() => {

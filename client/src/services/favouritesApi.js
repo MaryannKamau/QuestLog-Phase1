@@ -1,5 +1,5 @@
 // Connected securely to your live production Render server deployment configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-7tvc.onrender.com/api";
 const TOKEN_KEY = "questlog_token";
 
 // 1. READ: Fetch all favorites from your Flask backend (uses 'u' in endpoint)

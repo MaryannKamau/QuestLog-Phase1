@@ -1,6 +1,6 @@
 // Retained your secure fallback connection to your live Render server deployment
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
+  import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-7tvc.onrender.com/api";
 
 async function requestGames(params = {}) {
   const queryParams = new URLSearchParams();

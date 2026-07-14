@@ -1,5 +1,9 @@
-const DEPLOYED_BACKEND_URL = "https://questlog-backend-2.onrender.com/api";
+// FIXED: Dynamically pulls from your active backend variable link instead of tracking a stale staging server link
+const API_BASE_URL_CONFIG = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-7tvc.onrender.com/api";
+
+const DEPLOYED_BACKEND_URL = API_BASE_URL_CONFIG;
 const API_BASE_URL = `${DEPLOYED_BACKEND_URL}/auth`;
+
 const TOKEN_KEY = "questlog_token";
 const USER_KEY = "questlog_user";
 

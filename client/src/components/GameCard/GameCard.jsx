@@ -20,7 +20,7 @@ const GameCard = ({ game }) => {
   const [message, setMessage] = useState("");
 
   // FIXED: Dynamically falls back to your active environment variable path rather than a hardcoded server link
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-2.onrender.com/api";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://questlog-backend-7tvc.onrender.com/api";
   const COLL_API = `${API_BASE_URL}/collections`;
 
   const {

@@ -103,12 +103,3 @@ def get_game_details(game_id):
         return jsonify({"error": str(e)}), 500
 
 
-
-    
-    
-@games_bp.route("/<int:game_id>/reviews", methods=["GET"])
-def get_game_reviews(game_id):
-    
-    
-    return jsonify([]), 200
-

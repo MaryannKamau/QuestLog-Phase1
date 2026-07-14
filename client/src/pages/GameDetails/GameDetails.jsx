@@ -340,14 +340,14 @@ function GameDetails() {
                     <form className="review-edit-form" onSubmit={handleReviewUpdate}>
                       <select
                         value={editRating}
-                        onChange={(event) => setEditRating(event.target.value)}
+                        onChange={(event) => setEditRating(Number(event.target.value))}
                         style={{ width: "100%", padding: "8px", marginBottom: "8px", borderRadius: "6px", background: "#0a122c", color: "#fff" }}
-                      >
+>
                         {[5, 4, 3, 2, 1].map((rating) => (
-                          <option key={rating} value={rating}>
-                            {rating} ⭐
-                          </option>
-                        ))}
+                        <option key={rating} value={rating}>
+                          {rating} ⭐
+                       </option>
+                       ))}
                       </select>
                       <textarea
                         value={editText}

@@ -152,46 +152,48 @@ const GameCard = ({ game }) => {
         {message && <p className="action-feedback-status" style={{ color: "#4caf50", fontWeight: "bold" }}>{message}</p>}
         {saveError && <p className="game-card__error" style={{ color: "#f44336" }}>{saveError}</p>}
 
-        {/* 3. COLLECTION ACTIONS MANAGEMENT */}
-        {isAuthenticated ? (
-          userLists.length > 0 ? (
-            <div className="add-to-collection-wrapper" style={{ marginBottom: "0.5rem" }}>
-              <select 
-                onChange={(e) => {
-                  handleAddToList(e.target.value);
-                  e.target.value = ""; 
-                }}
-                defaultValue=""
-                style={{ width: "100%", padding: "0.5rem", borderRadius: "5px" }}
-              >
-                <option value="" disabled>📁 Add to Collection...</option>
-                {userLists.map((list) => (
-                  <option key={list.id} value={list.id}>
-                    {list.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* 3. DYNAMIC COLLECTION ACTIONS MANAGEMENT */}
+        <div className="add-to-collection-wrapper" style={{ marginBottom: "0.5rem" }}>
+          {!isAuthenticated ? (
+            /* Scenario A: User is not logged in */
+            <button
+              type="button"
+              className="collection-button"
+              onClick={() => navigate("/login")}
+              style={{ width: "100%", padding: "0.5rem", borderRadius: "5px", cursor: "pointer" }}
+            >
+              🔒 Login to Add to Collection
+            </button>
+          ) : userLists.length > 0 ? (
+            /* Scenario B: User is logged in AND has existing collections */
+            <select 
+              onChange={(e) => {
+                handleAddToList(e.target.value);
+                e.target.value = ""; 
+              }}
+              defaultValue=""
+              style={{ width: "100%", padding: "0.5rem", borderRadius: "5px", cursor: "pointer" }}
+            >
+              <option value="" disabled>📁 Add to a Collection...</option>
+              {userLists.map((list) => (
+                <option key={list.id} value={list.id}>
+                  {list.name}
+                </option>
+              ))}
+            </select>
           ) : (
+            /* Scenario C: User is logged in BUT has no collections yet */
             <button
               type="button"
               className="collection-button"
               onClick={() => navigate("/collections")}
-              style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
+              style={{ width: "100%", padding: "0.5rem", borderRadius: "5px", cursor: "pointer" }}
             >
-              📁 Create a Collection
+              📁 Create Your First Collection
             </button>
-          )
-        ) : (
-          <button
-            type="button"
-            className="collection-button"
-            onClick={() => navigate("/login")}
-            style={{ width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
-          >
-            🔒 Login to Collect
-          </button>
-        )}
+          )}
+        </div>
+
 
         {/* NAVIGATION LINK */}
         <Link

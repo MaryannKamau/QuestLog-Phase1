@@ -71,7 +71,7 @@ def get_games():
 
 
 # Phase 3 Integrated Helper Endpoint: Direct individual video game detail lookups
-@games_bp.route("/<int:game_id>", methods=["GET"])
+@games_bp.route("/<int:game_id>/", methods=["GET"])
 def get_game_details(game_id):
     params = {"key": current_app.config["RAWG_API_KEY"]}
     try:
@@ -84,7 +84,7 @@ def get_game_details(game_id):
 
 
 # Phase 3 Integrated Helper Endpoint: Direct video game screenshot gallery lookups
-@games_bp.route("/<int:game_id>/screenshots", methods=["GET"])
+@games_bp.route("/<int:game_id>/screenshots/", methods=["GET"])
 def get_game_screenshots_lookup(game_id):
     params = {"key": current_app.config["RAWG_API_KEY"]}
     try:
